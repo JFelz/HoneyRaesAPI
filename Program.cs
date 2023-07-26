@@ -8,19 +8,19 @@ List<Customer> customers = new List<Customer>()
     {
         Id = 1,
         Name = "Robert Mahr",
-        Address = "8758 Sussex St.\r\nMerrillville, IN 46410"
+        Address = "8758 Sussex St. Merrillville, IN 46410"
     },
     new Customer()
     {
         Id = 2,
         Name = "Ashley Cohn",
-        Address = "619 Baker Rd.\r\nFuquay Varina, NC 27526"
+        Address = "619 Baker Rd. Fuquay Varina, NC 27526"
     },
     new Customer()
     {
         Id = 3,
         Name =  "Isabella Rodriguez",
-        Address = "569 Kirkland St.\r\nMemphis, TN 38106"
+        Address = "569 Kirkland St. Memphis, TN 38106"
 
     }
 };
@@ -120,7 +120,44 @@ app.MapGet("/serviceTickets", () =>
 
 app.MapGet("/servicetickets/{id}", (int id) =>
 {
-    return serviceTickets.FirstOrDefault(s => s.Id == id);
+    ServiceTicket serviceTicket = serviceTickets.FirstOrDefault(s => s.Id == id);
+    if (serviceTicket == null)
+    {
+        return Results.NotFound();
+    }
+    serviceTicket.Employee = employees.FirstOrDefault(e => e.Id == serviceTicket.EmployeeId);
+    return Results.Ok(serviceTicket);
+});
+
+app.MapGet("/employees", () =>
+{
+    return employees;
+});
+
+app.MapGet("/employees/{id}", (int id) =>
+{
+    Employee employee = employees.FirstOrDefault(e => e.Id == id);
+    if (employee == null)
+    {
+        return Results.NotFound();
+    }
+    employee.ServiceTickets = serviceTickets.Where(s => s.EmployeeId == id).ToList();
+    return Results.Ok(employee);
+});
+
+app.MapGet("/customers", () =>
+{
+    return customers;
+});
+
+app.MapGet("/customers/{id}", (int id) => 
+{
+    Customer customer = customers.FirstOrDefault(c => c.Id == id);
+    if (customer == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(customer);
 });
 
 app.Run();
