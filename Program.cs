@@ -84,7 +84,7 @@ List<ServiceTicket> serviceTickets = new List<ServiceTicket>()
     {
         Id = 5,
         CustomerId = 2,
-        EmployeeId = 1,
+        EmployeeId = 2,
         Description = "Forgot Password and/or username. Help link won't work.",
         Emergency = false,
         DateCompleted = DateTime.Now
@@ -126,6 +126,8 @@ app.MapGet("/servicetickets/{id}", (int id) =>
         return Results.NotFound();
     }
     serviceTicket.Employee = employees.FirstOrDefault(e => e.Id == serviceTicket.EmployeeId);
+
+    serviceTicket.Customer = customers.FirstOrDefault(c => c.Id == serviceTicket.CustomerId);
     return Results.Ok(serviceTicket);
 });
 
@@ -157,6 +159,7 @@ app.MapGet("/customers/{id}", (int id) =>
     {
         return Results.NotFound();
     }
+    customer.ServiceTickets = serviceTickets.Where(s => s.CustomerId == id).ToList();
     return Results.Ok(customer);
 });
 
