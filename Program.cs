@@ -123,6 +123,7 @@ app.MapGet("/servicetickets/{id}", (int id) =>
     ServiceTicket serviceTicket = serviceTickets.FirstOrDefault(s => s.Id == id);
     if (serviceTicket == null)
     {
+        Console.WriteLine("Service Ticket is not in database!");
         return Results.NotFound();
     }
     serviceTicket.Employee = employees.FirstOrDefault(e => e.Id == serviceTicket.EmployeeId);
@@ -170,6 +171,12 @@ app.MapPost("/servicetickets", (ServiceTicket serviceTicket) =>
     serviceTicket.Id = serviceTickets.Max(st => st.Id) + 1;
     serviceTickets.Add(serviceTicket);
     return serviceTicket;
+});
+
+app.MapDelete("/serviceticketsDEL/{id}", (int id) =>
+{
+    ServiceTicket serviceTicketDEL = serviceTickets.FirstOrDefault(st => st.Id == id);
+    serviceTickets.Remove(serviceTicketDEL);
 });
 
 app.Run();
