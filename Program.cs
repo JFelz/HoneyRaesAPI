@@ -163,4 +163,13 @@ app.MapGet("/customers/{id}", (int id) =>
     return Results.Ok(customer);
 });
 
+//This creates a new Id. It checks if an Id is the highest number in the array, if so, add 1.
+//It will continuously add the next highest Id number to every serviceticket added.
+app.MapPost("/servicetickets", (ServiceTicket serviceTicket) =>
+{
+    serviceTicket.Id = serviceTickets.Max(st => st.Id) + 1;
+    serviceTickets.Add(serviceTicket);
+    return serviceTicket;
+});
+
 app.Run();
