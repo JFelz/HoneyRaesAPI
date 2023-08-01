@@ -48,10 +48,9 @@ List<ServiceTicket> serviceTickets = new List<ServiceTicket>()
     {
         Id = 1,
         CustomerId = 2,
-        EmployeeId = 1,
         Description = "Payment still processing.",
         Emergency = false,
-        DateCompleted = DateTime.Now
+
     },
     new ServiceTicket()
     {
@@ -59,17 +58,15 @@ List<ServiceTicket> serviceTickets = new List<ServiceTicket>()
         CustomerId = 3,
         EmployeeId = 2,
         Description = "Hasn't recieved their order. Shipping lost.",
-        Emergency = false,
-        DateCompleted = DateTime.Now
+        Emergency = true
+
     },
     new ServiceTicket()
     {
         Id = 3,
         CustomerId = 1,
-        EmployeeId = 1,
         Description = "Account hacked.",
         Emergency = true,
-        DateCompleted = DateTime.Now
     },
     new ServiceTicket()
     {
@@ -77,8 +74,7 @@ List<ServiceTicket> serviceTickets = new List<ServiceTicket>()
         CustomerId = 3,
         EmployeeId = 2,
         Description = "Site crashed. Want's to check if order was accepted. Bank charged their account.",
-        Emergency = true,
-        DateCompleted = DateTime.Now
+        Emergency = true
     },
     new ServiceTicket()
     {
@@ -201,6 +197,19 @@ app.MapPost("/servicetickets/{id}/complete", (int id) =>
     ServiceTicket ticketCompleted = serviceTickets.FirstOrDefault(st => st.Id == id);
     ticketCompleted.DateCompleted = DateTime.Today;
 
+});
+
+app.MapGet("/servicetickets/activeEM", () =>
+{
+    List<ServiceTicket> serviceTicket = serviceTickets.Where(st => st.Emergency == true && st.DateCompleted == null).ToList();
+
+    return serviceTicket;
+});
+
+app.MapGet("/servicetickets/unassigned", () =>
+{
+    List<ServiceTicket> unassignedTickets = serviceTickets.Where(st => st.EmployeeId == null).ToList();
+    return unassignedTickets;
 });
 
 app.Run();
