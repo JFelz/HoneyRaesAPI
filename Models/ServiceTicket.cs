@@ -8,6 +8,7 @@
         public string Description { get; set; }
         public bool Emergency { get; set; }
         public DateTime? DateCompleted { get; set; }
+        public string DateCompletedFormatted => DateCompleted.Value.ToShortDateString();
         public Employee Employee { get; set; }
         public Customer Customer { get; set; }
 
