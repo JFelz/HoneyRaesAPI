@@ -40,6 +40,12 @@ List<Employee> employees = new List<Employee>()
         Name = "Desmond Beau",
         Specialty = "C#"
     },
+    new Employee()
+    {
+        Id = 5,
+        Name = "Test",
+        Specialty = "F#"
+    },
 };
 
 List<ServiceTicket> serviceTickets = new List<ServiceTicket>()
@@ -67,6 +73,7 @@ List<ServiceTicket> serviceTickets = new List<ServiceTicket>()
         CustomerId = 1,
         Description = "Account hacked.",
         Emergency = true,
+        DateCompleted = new DateTime(2016, 2, 15)
     },
     new ServiceTicket()
     {
@@ -199,7 +206,7 @@ app.MapPost("/servicetickets/{id}/complete", (int id) =>
 
 });
 
-app.MapGet("/servicetickets/activeEM", () =>
+app.MapGet("/servicetickets/active", () =>
 {
     List<ServiceTicket> serviceTicket = serviceTickets.Where(st => st.Emergency == true && st.DateCompleted == null).ToList();
 
@@ -210,6 +217,26 @@ app.MapGet("/servicetickets/unassigned", () =>
 {
     List<ServiceTicket> unassignedTickets = serviceTickets.Where(st => st.EmployeeId == null).ToList();
     return unassignedTickets;
+});
+
+app.MapGet("/servicetickets/inactive", () =>
+{
+    DateTime currentYear = DateTime.Now;
+
+    List<ServiceTicket> serviceTicket = serviceTickets.Where(st => st.DateCompleted != null && st.DateCompleted < currentYear.AddYears(-1)).ToList();
+    return serviceTicket;
+});
+
+app.MapGet("/employees/available", () =>
+{
+    List<ServiceTicket> serviceTicket = serviceTickets.Where(x => serviceTickets.Any(y => y.EmployeeId == x.Id && y.DateCompleted == null)).ToList();
+    List<ServiceTicket> AvailableEmployees = serviceTickets.Where(x => serviceTicket.Any(y => y.EmployeeId != x.Id)).ToList();
+    return AvailableEmployees;
+});
+
+app.MapGet("/customers/assigned", () =>
+{
+
 });
 
 app.Run();
