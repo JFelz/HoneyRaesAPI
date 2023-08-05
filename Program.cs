@@ -42,8 +42,8 @@ List<Employee> employees = new List<Employee>()
     new Employee()
     {
         Id = 5,
-        Name = "Test",
-        Specialty = "F#"
+        Name = "Jovanni Feliz",
+        Specialty = "CyberSecurity"
     },
 };
 
@@ -90,6 +90,24 @@ List<ServiceTicket> serviceTickets = new List<ServiceTicket>()
         Description = "Forgot Password and/or username. Help link won't work.",
         Emergency = false,
         DateCompleted = DateTime.Now
+    },
+    new ServiceTicket()
+    {
+        Id = 6,
+        CustomerId = 1,
+        EmployeeId = 2,
+        Description = "Button issue",
+        Emergency = false,
+        DateCompleted = new DateTime(2023, 2, 15)
+    },
+    new ServiceTicket()
+    {
+        Id = 7,
+        CustomerId = 3,
+        EmployeeId = 1,
+        Description = "Login issue",
+        Emergency = false,
+        DateCompleted = new DateTime(2023, 2, 15)
     }
 
 };
@@ -243,6 +261,22 @@ app.MapGet("employees/{id}/customers/assigned", (int id) =>
         return null;
     } 
     return assignedCustomer;
+});
+
+app.MapGet("employees/EOTM", () =>
+{
+    DateTime currentDate = DateTime.Now;
+    List<ServiceTicket> lastMonth = serviceTickets.Where(x => x.DateCompleted > currentDate.AddMonths(-1)).ToList();
+    List<ServiceTicket> dateCompletedObjs = lastMonth.Where(x => x.DateCompleted != null && x.EmployeeId != null).ToList();
+    List<Employee> EmOfMonth = employees.Where(x => dateCompletedObjs.Any(y => y.EmployeeId == x.Id)).ToList();
+
+    return Results.Ok(EmOfMonth);
+});
+
+app.MapGet("/completed", () =>
+{
+    var completedTickets = serviceTickets.Where(st => st.DateCompleted != null).OrderBy(st => st.DateCompleted);
+    return Results.Ok(completedTickets);
 });
 
 app.Run();
