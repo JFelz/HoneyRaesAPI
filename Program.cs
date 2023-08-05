@@ -21,7 +21,6 @@ List<Customer> customers = new List<Customer>()
         Id = 3,
         Name =  "Isabella Rodriguez",
         Address = "569 Kirkland St. Memphis, TN 38106"
-
     }
 };
 
@@ -234,9 +233,16 @@ app.MapGet("/employees/available", () =>
     return AvailableEmployees;
 });
 
-app.MapGet("/customers/assigned", () =>
+app.MapGet("employees/{id}/customers/assigned", (int id) =>
 {
-
+    List<ServiceTicket> currentEmployees = serviceTickets.Where(st => st.EmployeeId == id).ToList();
+    List<int> customerIds = currentEmployees.Select(x => x.CustomerId).ToList();
+    List<Customer> assignedCustomer = customers.Where(c => customerIds.Contains(c.Id)).ToList();
+    if (assignedCustomer.Count == 0)
+    {
+        return null;
+    } 
+    return assignedCustomer;
 });
 
 app.Run();
